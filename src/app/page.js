@@ -1,103 +1,146 @@
-import Image from "next/image";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, CheckCircle, Users, Target, TrendingUp, Star } from "lucide-react";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+      <Navigation />
+      
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+            Gerencie seus projetos com
+            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent block mt-2">
+              máxima eficiência
+            </span>
+          </h1>
+          
+          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Uma plataforma completa para organizar, acompanhar e entregar seus projetos 
+            com qualidade e no prazo. Simplifique sua gestão e potencialize seus resultados.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button size="lg" className="text-lg px-8 py-4 bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+              Começar agora
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-4 border-2 border-slate-300 hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200"
+            >
+              Ver demonstração
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-6">
+              Tudo que você precisa em um só lugar
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Ferramentas poderosas e intuitivas para elevar a gestão de projetos 
+              da sua equipe ao próximo nível.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-8 hover:shadow-xl transition-all duration-300 border-0 shadow-clean group">
+              <CardContent className="p-0">
+                <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors">
+                  <Target className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">Planejamento Estratégico</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Defina objetivos claros, crie cronogramas realistas e acompanhe o progresso 
+                  de cada etapa do projeto em tempo real.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="p-8 hover:shadow-xl transition-all duration-300 border-0 shadow-clean group">
+              <CardContent className="p-0">
+                <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors">
+                  <Users className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">Colaboração em Equipe</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Facilite a comunicação, distribua tarefas de forma eficiente e mantenha 
+                  todos os membros da equipe alinhados e produtivos.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="p-8 hover:shadow-xl transition-all duration-300 border-0 shadow-clean group">
+              <CardContent className="p-0">
+                <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mb-6 group-hover:bg-purple-200 transition-colors">
+                  <TrendingUp className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">Análise de Desempenho</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Obtenha insights valiosos com relatórios detalhados e métricas que 
+                  ajudam a otimizar processos e melhorar resultados.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">10k+</div>
+              <div className="text-slate-600">Projetos concluídos</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-green-600 mb-2">98%</div>
+              <div className="text-slate-600">Taxa de satisfação</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-purple-600 mb-2">500+</div>
+              <div className="text-slate-600">Empresas confiam</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
+              <div className="text-slate-600">Suporte dedicado</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-emerald-600 to-teal-600">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Pronto para transformar sua gestão de projetos?
+          </h2>
+          <p className="text-xl text-emerald-100 mb-10">
+            Junte-se a milhares de equipes que já descobriram uma forma mais 
+            inteligente de gerenciar projetos.
+          </p>
+          <Button 
+            size="lg" 
+            className="text-lg px-8 py-4 bg-white text-emerald-600 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            Comece seu teste gratuito
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }
