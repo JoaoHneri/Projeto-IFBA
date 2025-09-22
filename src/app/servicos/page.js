@@ -188,7 +188,7 @@ export default function ServicosPage() {
                     {/* Botões de Ação */}
                     <div className="space-y-3">
                       <Link href={`/servicos/${servico.id}`}>
-                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer">
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer mb-2">
                           Ver Detalhes
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
