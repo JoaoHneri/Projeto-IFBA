@@ -110,105 +110,91 @@ export default function TrelloCard({ card, listId, boardId, isDragOverlay = fals
       <div
         ref={setNodeRef}
         style={style}
-        className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all group relative ${
+        {...attributes}
+        {...listeners}
+        className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all group relative cursor-grab active:cursor-grabbing ${
           isDragOverlay ? 'rotate-3 shadow-lg' : ''
         } ${card.cover ? `border-l-4 border-l-${labelColors[card.cover].replace('bg-', '')}` : ''}`}
         onMouseEnter={() => setShowQuickActions(true)}
         onMouseLeave={() => setShowQuickActions(false)}
       >
-        {/* Drag Handle - área específica para drag */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-2 left-2 w-4 h-4 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-60 transition-opacity z-10"
-          title="Arrastar cartão"
-        >
-          <div className="w-full h-full bg-gray-400 rounded-sm flex flex-col justify-center items-center">
-            <div className="w-2 h-0.5 bg-white mb-0.5"></div>
-            <div className="w-2 h-0.5 bg-white mb-0.5"></div>
-            <div className="w-2 h-0.5 bg-white"></div>
+        {/* Cover Image/Color */}
+        {card.cover && (
+          <div className={`h-8 ${labelColors[card.cover]} rounded-t-lg`}></div>
+        )}
+
+        {/* Labels */}
+        {card.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1 p-3 pb-2">
+            {card.labels.map((label) => (
+              <span
+                key={label.id}
+                className={`${labelColors[label.color]} text-white text-xs px-2 py-1 rounded-full font-medium`}
+                title={label.name}
+              >
+                {label.name}
+              </span>
+            ))}
           </div>
+        )}
+
+        {/* Title */}
+        <div 
+          className={`px-3 py-2 ${card.cover || card.labels.length > 0 ? '' : 'pt-3'}`}
+          onClick={handleCardClick}
+        >
+          <h4 className="text-sm font-medium text-gray-900 line-clamp-3">
+            {card.title}
+          </h4>
+          
+          {/* Priority Badge */}
+          {card.priority && card.priority !== 'media' && (
+            <div className="mt-2">
+              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                card.priority === 'baixa' ? 'bg-green-100 text-green-700' :
+                card.priority === 'alta' ? 'bg-red-100 text-red-700' :
+                card.priority === 'critica' ? 'bg-purple-100 text-purple-700' :
+                'bg-yellow-100 text-yellow-700'
+              }`}>
+                {card.priority === 'baixa' ? 'Baixa' :
+                 card.priority === 'alta' ? 'Alta' :
+                 card.priority === 'critica' ? 'Crítica' : 'Média'}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Conteúdo clicável do cartão */}
-        <div
-          onClick={handleCardClick}
-          className="cursor-pointer w-full h-full"
-        >
-          {/* Cover Image/Color */}
-          {card.cover && (
-            <div className={`h-8 ${labelColors[card.cover]} rounded-t-lg`}></div>
-          )}
-
-          {/* Labels */}
-          {card.labels.length > 0 && (
-            <div className="flex flex-wrap gap-1 p-3 pb-2">
-              {card.labels.map((label) => (
-                <span
-                  key={label.id}
-                  className={`${labelColors[label.color]} text-white text-xs px-2 py-1 rounded-full font-medium`}
-                  title={label.name}
-                >
-                  {label.name}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Title */}
-          <div className={`px-3 py-2 ${card.cover || card.labels.length > 0 ? '' : 'pt-3'}`}>
-            <h4 className="text-sm font-medium text-gray-900 line-clamp-3">
-              {card.title}
-            </h4>
-            
-            {/* Priority Badge */}
-            {card.priority && card.priority !== 'media' && (
-              <div className="mt-2">
-                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                  card.priority === 'baixa' ? 'bg-green-100 text-green-700' :
-                  card.priority === 'alta' ? 'bg-red-100 text-red-700' :
-                  card.priority === 'critica' ? 'bg-purple-100 text-purple-700' :
-                  'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {card.priority === 'baixa' ? 'Baixa' :
-                   card.priority === 'alta' ? 'Alta' :
-                   card.priority === 'critica' ? 'Crítica' : 'Média'}
-                </span>
-              </div>
-            )}
+        {/* Description Preview */}
+        {card.description && (
+          <div className="px-3 pb-2" onClick={handleCardClick}>
+            <p className="text-xs text-gray-600 line-clamp-2">
+              {card.description}
+            </p>
           </div>
+        )}
 
-          {/* Description Preview */}
-          {card.description && (
-            <div className="px-3 pb-2">
-              <p className="text-xs text-gray-600 line-clamp-2">
-                {card.description}
-              </p>
-            </div>
-          )}
-
-          {/* Checklist Progress */}
-          {totalChecklist > 0 && (
-            <div className="px-3 pb-2">
-              <div className="flex items-center gap-2">
-                <CheckSquare className="w-3 h-3 text-gray-500" />
-                <div className="flex-1 bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
-                      checklistProgress === 100 ? 'bg-green-500' : 'bg-blue-500'
-                    }`}
-                    style={{ width: `${checklistProgress}%` }}
-                  />
-                </div>
-                <span className="text-xs text-gray-600">
-                  {completedChecklist}/{totalChecklist}
-                </span>
+        {/* Checklist Progress */}
+        {totalChecklist > 0 && (
+          <div className="px-3 pb-2" onClick={handleCardClick}>
+            <div className="flex items-center gap-2">
+              <CheckSquare className="w-3 h-3 text-gray-500" />
+              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full transition-all ${
+                    checklistProgress === 100 ? 'bg-green-500' : 'bg-blue-500'
+                  }`}
+                  style={{ width: `${checklistProgress}%` }}
+                />
               </div>
+              <span className="text-xs text-gray-600">
+                {completedChecklist}/{totalChecklist}
+              </span>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Footer */}
-          <div className="px-3 pb-3">
+        {/* Footer */}
+        <div className="px-3 pb-3" onClick={handleCardClick}>
             <div className="flex items-center justify-between">
               {/* Left side - icons */}
               <div className="flex items-center gap-2">
@@ -263,14 +249,18 @@ export default function TrelloCard({ card, listId, boardId, isDragOverlay = fals
               )}
             </div>
           </div>
-        </div>
 
         {/* Quick Actions (hover) */}
         {showQuickActions && !isDragOverlay && (
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
             <button
-              onClick={handleQuickEdit}
-              className="bg-gray-800 bg-opacity-80 text-white p-1 rounded hover:bg-opacity-100 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleQuickEdit(e);
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="bg-gray-800 bg-opacity-80 text-white p-1 rounded hover:bg-opacity-100 transition-colors cursor-pointer"
               title="Editar"
             >
               <Edit3 className="w-3 h-3" />

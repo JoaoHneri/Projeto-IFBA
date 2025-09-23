@@ -190,23 +190,23 @@ export default function CardModal({ card, listId, boardId, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mt-8 mb-8">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mt-2 sm:mt-8 mb-2 sm:mb-8 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-gray-200">
-          <div className="flex-1">
+        <div className="flex items-start justify-between p-4 sm:p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+          <div className="flex-1 min-w-0 pr-4">
             {isEditing ? (
               <div className="space-y-3">
                 <input
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full text-xl font-semibold bg-transparent border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full text-lg sm:text-xl font-semibold bg-transparent border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     onClick={handleSave}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 sm:py-1 rounded text-sm transition-colors"
                   >
                     Salvar
                   </button>
@@ -216,40 +216,40 @@ export default function CardModal({ card, listId, boardId, onClose }) {
                       setEditTitle(card.title);
                       setEditDescription(card.description || '');
                     }}
-                    className="text-gray-600 hover:text-gray-800 px-3 py-1 text-sm transition-colors"
+                    className="text-gray-600 hover:text-gray-800 px-3 py-2 sm:py-1 text-sm transition-colors border border-gray-300 rounded hover:bg-gray-50"
                   >
                     Cancelar
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <Edit3 className="w-5 h-5 text-gray-400" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />
                 <h2 
                   onClick={() => setIsEditing(true)}
-                  className="text-xl font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
+                  className="text-lg sm:text-xl font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded truncate"
                 >
                   {card.title}
                 </h2>
               </div>
             )}
             
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-xs sm:text-sm text-gray-600 mt-2 truncate">
               na lista <span className="font-medium">{list?.title}</span>
             </p>
           </div>
           
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="text-gray-400 hover:text-gray-600 p-1 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex">
+        <div className="flex flex-col lg:flex-row">
           {/* Main Content */}
-          <div className="flex-1 p-6 space-y-6">
+          <div className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Labels */}
             {card.labels.length > 0 && (
               <div>
@@ -259,7 +259,7 @@ export default function CardModal({ card, listId, boardId, onClose }) {
                     <span
                       key={label.id}
                       onClick={() => handleRemoveLabel(label.id)}
-                      className={`${labelColors[label.color]} text-white text-xs px-3 py-1 rounded-full font-medium cursor-pointer hover:opacity-80 transition-opacity`}
+                      className={`${labelColors[label.color]} text-white text-xs px-2 sm:px-3 py-1 rounded-full font-medium cursor-pointer hover:opacity-80 transition-opacity`}
                       title={`Clique para remover ${label.name}`}
                     >
                       {label.name}
@@ -473,22 +473,22 @@ export default function CardModal({ card, listId, boardId, onClose }) {
           </div>
 
           {/* Sidebar */}
-          <div className="w-48 p-6 bg-gray-50 border-l border-gray-200">
+          <div className="w-full lg:w-48 p-4 sm:p-6 bg-gray-50 border-t lg:border-t-0 lg:border-l border-gray-200">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Ações</h3>
             
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
               {/* Labels */}
-              <div className="relative">
+              <div className="relative lg:block">
                 <button
                   onClick={() => setShowLabelSelector(!showLabelSelector)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center lg:justify-start gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
                 >
                   <Tag className="w-4 h-4" />
-                  Etiquetas
+                  <span className="hidden sm:inline">Etiquetas</span>
                 </button>
                 
                 {showLabelSelector && (
-                  <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-10 min-w-[200px]">
+                  <div className="absolute left-0 lg:left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-10 min-w-[200px]">
                     <h4 className="text-sm font-medium text-gray-900 mb-2">Adicionar Etiqueta</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {Object.entries(labelColors).map(([color, className]) => (

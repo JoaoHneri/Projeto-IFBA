@@ -379,6 +379,10 @@ function boardReducer(state, action) {
     case 'MOVE_CARD':
       const { boardId, sourceListId, destinationListId, sourceIndex, destinationIndex } = action.payload;
       
+      if (process.env.NODE_ENV === 'development') {
+        console.log('MOVE_CARD action:', action.payload);
+      }
+      
       return {
         ...state,
         boards: state.boards.map(board => {
@@ -390,13 +394,26 @@ function boardReducer(state, action) {
 
           // Verificar se as listas existem
           if (!sourceList || !destinationList) {
-            console.error('Lista não encontrada:', { sourceListId, destinationListId });
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('MOVE_CARD: Lista não encontrada:', { 
+                sourceListId, 
+                destinationListId, 
+                availableLists: newLists.map(l => ({ id: l.id, title: l.title }))
+              });
+            }
             return board;
           }
 
           // Verificar se o índice é válido
           if (sourceIndex < 0 || sourceIndex >= sourceList.cards.length) {
-            console.error('Índice inválido:', { sourceIndex, cardsLength: sourceList.cards.length });
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('MOVE_CARD: Índice inválido:', { 
+                sourceIndex, 
+                cardsLength: sourceList.cards.length,
+                sourceListId: sourceList.id,
+                availableCards: sourceList.cards.map(c => ({ id: c.id, title: c.title }))
+              });
+            }
             return board;
           }
 
@@ -405,7 +422,13 @@ function boardReducer(state, action) {
           
           // Verificar se o cartão foi encontrado
           if (!movedCard) {
-            console.error('Cartão não encontrado no índice:', sourceIndex);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('MOVE_CARD: Cartão não encontrado no índice:', {
+                sourceIndex,
+                sourceListId: sourceList.id,
+                cardsLength: sourceList.cards.length
+              });
+            }
             return board;
           }
           

@@ -86,13 +86,13 @@ export default function TrelloList({ list, boardId }) {
   };
 
   return (
-    <div className="min-w-[280px] max-w-[280px]">
+    <div className="min-w-[280px] max-w-[280px] sm:min-w-[300px] sm:max-w-[300px]">
       <div className="bg-gray-100 rounded-lg shadow-sm">
         {/* List Header */}
         <div className="p-3 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {isEditingTitle ? (
-              <form onSubmit={handleUpdateTitle} className="flex-1">
+              <form onSubmit={handleUpdateTitle} className="flex-1 min-w-0">
                 <input
                   type="text"
                   value={editTitle}
@@ -105,13 +105,13 @@ export default function TrelloList({ list, boardId }) {
             ) : (
               <h3
                 onClick={() => setIsEditingTitle(true)}
-                className="flex-1 text-sm font-medium text-gray-900 cursor-pointer hover:bg-gray-200 px-2 py-1 rounded"
+                className="flex-1 min-w-0 text-sm font-medium text-gray-900 cursor-pointer hover:bg-gray-200 px-2 py-1 rounded truncate"
               >
                 {list.title}
               </h3>
             )}
             
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-shrink-0">
               <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
                 {list.cards.length}
               </span>

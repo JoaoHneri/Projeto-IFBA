@@ -15,17 +15,17 @@ export default function TrelloApp() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
       {!activeBoard ? (
-        <>
-          <Navigation />
-          <main className="pt-20">
-            <BoardSelector />
-          </main>
-          <Footer />
-        </>
+        <main className="pt-20">
+          <BoardSelector />
+        </main>
       ) : (
-        <TrelloBoard board={activeBoard} />
+        <main className="pt-16">
+          <TrelloBoard board={activeBoard} />
+        </main>
       )}
+      {!activeBoard && <Footer />}
     </div>
   );
 }
