@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBoardContext } from '@/contexts/BoardContext';
 import { Plus, X, MoreHorizontal, Users, Lock, Globe } from 'lucide-react';
 
@@ -15,12 +15,24 @@ const backgroundColors = {
 export default function BoardSelector() {
   const { boards, currentBoard, dispatch } = useBoardContext();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showBoardOptions, setShowBoardOptions] = useState(null);
   const [newBoard, setNewBoard] = useState({
     title: '',
     description: '',
     visibility: 'team',
     background: 'emerald'
   });
+
+  // Fechar dropdown quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.board-options-container')) {
+        setShowBoardOptions(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   const handleCreateBoard = (e) => {
     e.preventDefault();
@@ -74,6 +86,31 @@ export default function BoardSelector() {
     }
   };
 
+  const handleBoardOptionsClick = (e, boardId) => {
+    e.stopPropagation();
+    setShowBoardOptions(showBoardOptions === boardId ? null : boardId);
+  };
+
+  const handleDeleteBoard = (boardId) => {
+    if (window.confirm('Tem certeza que deseja excluir este quadro? Esta ação não pode ser desfeita.')) {
+      dispatch({ type: 'DELETE_BOARD', payload: { boardId } });
+      setShowBoardOptions(null);
+    }
+  };
+
+  const handleDuplicateBoard = (board) => {
+    dispatch({
+      type: 'CREATE_BOARD',
+      payload: {
+        ...board,
+        id: undefined,
+        title: `${board.title} (cópia)`,
+        createdAt: new Date(),
+      }
+    });
+    setShowBoardOptions(null);
+  };
+
   return (
     <div className="p-6">
       <div className="max-w-6xl mx-auto">
@@ -95,19 +132,53 @@ export default function BoardSelector() {
           {boards.map((board) => (
             <div
               key={board.id}
-              onClick={() => dispatch({ type: 'SET_CURRENT_BOARD', payload: { boardId: board.id } })}
-              className={`${backgroundColors[board.background]} p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer group relative overflow-hidden`}
+              className={`${backgroundColors[board.background]} p-6 rounded-lg shadow-md hover:shadow-lg transition-all group relative overflow-hidden`}
             >
               <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
               
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2">
+                  <h3 
+                    onClick={() => dispatch({ type: 'SET_CURRENT_BOARD', payload: { boardId: board.id } })}
+                    className="text-white font-semibold text-lg mb-2 line-clamp-2 cursor-pointer flex-1 hover:text-opacity-80 transition-opacity"
+                  >
                     {board.title}
                   </h3>
-                  <button className="opacity-0 group-hover:opacity-100 text-white hover:bg-white hover:bg-opacity-20 p-1 rounded transition-all">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
+                  <div className="relative board-options-container">
+                    <button 
+                      onClick={(e) => handleBoardOptionsClick(e, board.id)}
+                      className="text-white hover:bg-white hover:bg-opacity-20 p-1 rounded transition-all opacity-60 hover:opacity-100"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                    
+                    {showBoardOptions === board.id && (
+                      <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[180px] z-50">
+                        <button
+                          onClick={() => {
+                            dispatch({ type: 'SET_CURRENT_BOARD', payload: { boardId: board.id } });
+                            setShowBoardOptions(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        >
+                          Abrir quadro
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateBoard(board)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        >
+                          Duplicar quadro
+                        </button>
+                        <hr className="my-1" />
+                        <button
+                          onClick={() => handleDeleteBoard(board.id)}
+                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          Excluir quadro
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {board.description && (

@@ -228,7 +228,7 @@ function boardReducer(state, action) {
     case 'DELETE_BOARD':
       return {
         ...state,
-        boards: state.boards.filter(board => board.id !== action.payload.id)
+        boards: state.boards.filter(board => board.id !== action.payload.boardId)
       };
 
     case 'CREATE_LIST':
