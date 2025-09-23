@@ -21,7 +21,7 @@ export default function TrelloApp() {
           <BoardSelector />
         </main>
       ) : (
-        <main className="pt-16">
+        <main>
           <TrelloBoard board={activeBoard} />
         </main>
       )}
