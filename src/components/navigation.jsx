@@ -14,6 +14,7 @@ export function Navigation() {
     { name: 'Início', href: '/' },
     { name: 'Sobre', href: '/sobre' },
     { name: 'Serviços', href: '/servicos' },
+    { name: 'Projetos', href: '/projetos' },
     { name: 'Contato', href: '/contato' },
   ];
 
@@ -25,7 +26,7 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">P</span>
             </div>
             <span className="font-semibold text-xl text-gray-900">ProjetoHub</span>
@@ -39,7 +40,7 @@ export function Navigation() {
                 href={item.href}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive(item.href)
-                    ? 'bg-blue-50 text-blue-700'
+                    ? 'bg-emerald-50 text-emerald-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -57,7 +58,7 @@ export function Navigation() {
               </Button>
             </Link>
             <Link href="/cadastro">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-light">
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white font-light">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Cadastrar
               </Button>
@@ -86,7 +87,7 @@ export function Navigation() {
                 href={item.href}
                 className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                   isActive(item.href)
-                    ? 'bg-blue-50 text-blue-700'
+                    ? 'bg-emerald-50 text-emerald-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
                 onClick={() => setIsOpen(false)}
@@ -103,7 +104,7 @@ export function Navigation() {
                 </Button>
               </Link>
               <Link href="/cadastro" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-light">
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-light">
                   <UserPlus className="w-4 h-4 mr-2" />
                   Cadastrar
                 </Button>
