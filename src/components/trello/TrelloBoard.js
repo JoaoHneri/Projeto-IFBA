@@ -207,20 +207,20 @@ export default function TrelloBoard({ board }) {
             {/* Mobile Search and Filter */}
             <div className="space-y-3">
               <div className="relative">
-                <Search className="w-4 h-4 text-white text-opacity-60 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Search className="w-4 h-4 text-opacity-60 absolute left-3 top-1/2 transform -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Buscar cartões..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-60 pl-10 pr-4 py-2 rounded-lg text-sm focus:bg-opacity-30 focus:outline-none"
+                  className="w-full bg-white bg-opacity-20 placeholder-white placeholder-opacity-60 pl-10 pr-4 py-2 rounded-lg text-sm focus:bg-opacity-30 focus:outline-none"
                 />
               </div>
 
               <select
                 value={filterLabel}
                 onChange={(e) => setFilterLabel(e.target.value)}
-                className="w-full bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm focus:bg-opacity-30 focus:outline-none"
+                className="w-full bg-white bg-opacity-20  rounded-lg px-3 py-2 text-sm focus:bg-opacity-30 focus:outline-none"
               >
                 <option value="">Todas as etiquetas</option>
                 {allLabels.map(label => (
@@ -251,13 +251,13 @@ export default function TrelloBoard({ board }) {
             <div className="flex items-center gap-3">
               {/* Search */}
               <div className="relative">
-                <Search className="w-4 h-4 text-white text-opacity-60 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Search className="w-4 h-4 text-opacity-60 absolute left-3 top-1/2 transform -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Buscar cartões..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-60 pl-10 pr-4 py-2 rounded-lg text-sm focus:bg-opacity-30 focus:outline-none w-64"
+                  className="bg-white bg-opacity-20 placeholder-white placeholder-opacity-60 pl-10 pr-4 py-2 rounded-lg text-sm focus:bg-opacity-30 focus:outline-none w-64"
                 />
               </div>
 
@@ -265,7 +265,7 @@ export default function TrelloBoard({ board }) {
               <select
                 value={filterLabel}
                 onChange={(e) => setFilterLabel(e.target.value)}
-                className="bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm focus:bg-opacity-30 focus:outline-none min-w-[180px]"
+                className="bg-white bg-opacity-20 rounded-lg px-3 py-2 text-sm focus:bg-opacity-30 focus:outline-none min-w-[180px]"
               >
                 <option value="">Todas as etiquetas</option>
                 {allLabels.map(label => (
@@ -340,7 +340,7 @@ export default function TrelloBoard({ board }) {
                 ) : (
                   <button
                     onClick={() => setShowCreateList(true)}
-                    className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 min-h-[120px] border-2 border-dashed border-white border-opacity-30 hover:border-opacity-50"
+                    className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 min-h-[120px] border-2 border-dashed border-white border-opacity-30 hover:border-opacity-50"
                   >
                     <Plus className="w-5 h-5" />
                     <span className="text-sm sm:text-base">Adicionar uma lista</span>
