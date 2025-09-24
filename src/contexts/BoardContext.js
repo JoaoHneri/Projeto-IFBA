@@ -54,7 +54,7 @@ const initialState = {
   boards: [
     {
       id: '1',
-      title: 'Projeto Website IFBA',
+      title: 'Website Corporativo',
       description: 'Desenvolvimento do novo site institucional',
       visibility: 'team',
       background: 'emerald',
@@ -535,7 +535,7 @@ export function BoardProvider({ children }) {
 
   // Persistir no localStorage
   useEffect(() => {
-    const savedState = localStorage.getItem('trello-boards');
+    const savedState = localStorage.getItem('synchro-boards');
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
@@ -549,13 +549,13 @@ export function BoardProvider({ children }) {
         }
       } catch (error) {
         console.error('Erro ao carregar dados salvos:', error);
-        localStorage.removeItem('trello-boards'); // Limpar dados corrompidos
+        localStorage.removeItem('synchro-boards'); // Limpar dados corrompidos
       }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('trello-boards', JSON.stringify(state));
+    localStorage.setItem('synchro-boards', JSON.stringify(state));
   }, [state]);
 
   const value = {

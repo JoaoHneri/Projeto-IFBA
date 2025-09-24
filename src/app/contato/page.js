@@ -240,8 +240,8 @@ export default function ContatoPage() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-slate-900 mb-1">Email</h4>
-                        <p className="text-slate-600">contato@projetohub.com</p>
-                        <p className="text-slate-600">suporte@projetohub.com</p>
+                        <p className="text-slate-600">contato@synchro.com</p>
+                        <p className="text-slate-600">suporte@synchro.com</p>
                       </div>
                     </div>
                     

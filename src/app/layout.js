@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "ProjetoHub - Sistema de Gerenciamento de Projetos",
+  title: "Synchro - Sistema de Gerenciamento de Projetos",
   description: "Plataforma completa para gerenciamento de projetos, equipes e recursos",
 };
 

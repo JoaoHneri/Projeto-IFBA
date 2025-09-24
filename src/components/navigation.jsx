@@ -27,9 +27,9 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P</span>
+              <span className="text-white font-bold text-sm">S</span>
             </div>
-            <span className="font-semibold text-xl text-gray-900">ProjetoHub</span>
+            <span className="font-semibold text-xl text-gray-900">Synchro</span>
           </Link>
 
           {/* Desktop Navigation */}

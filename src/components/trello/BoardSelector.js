@@ -244,7 +244,7 @@ export default function BoardSelector() {
                       value={newBoard.title}
                       onChange={(e) => setNewBoard(prev => ({ ...prev, title: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                      placeholder="Ex: Projeto Website"
+                      placeholder="Ex: Sistema E-commerce"
                       required
                     />
                   </div>

@@ -14,7 +14,7 @@ export default function SobrePage() {
           <h1 className="text-5xl font-bold text-slate-900 mb-6 leading-tight">
             Sobre a 
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              {" "}ProjetoHub
+              {" "}Synchro
             </span>
           </h1>
           
@@ -34,7 +34,7 @@ export default function SobrePage() {
               <div className="space-y-6">
                 <p className="text-lg text-slate-600 leading-relaxed">
                   Fundada em 2020 por uma equipe de especialistas em gestão de projetos e tecnologia, 
-                  a ProjetoHub nasceu da necessidade de simplificar os processos complexos que 
+                  a Synchro nasceu da necessidade de simplificar os processos complexos que 
                   envolvem o gerenciamento de projetos corporativos.
                 </p>
                 <p className="text-lg text-slate-600 leading-relaxed">

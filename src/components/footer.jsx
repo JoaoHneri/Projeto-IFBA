@@ -8,9 +8,9 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
+                <span className="text-white font-bold text-xl">S</span>
               </div>
-              <span className="text-xl font-bold">ProjetoHub</span>
+              <span className="text-xl font-bold">Synchro</span>
             </div>
             <p className="text-gray-300 mb-4">
               Sua solução completa para gerenciamento de projetos. 
@@ -65,7 +65,7 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contato</h3>
             <ul className="space-y-2 text-gray-300">
-              <li>📧 contato@projetohub.com</li>
+              <li>📧 contato@synchro.com</li>
               <li>📱 (75) 99999-9999</li>
               <li>💬 WhatsApp: (75) 99999-9999</li>
               <li>📍 Salvador, BA - Brasil</li>
@@ -74,7 +74,7 @@ export function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-300">
-          <p>&copy; 2024 ProjetoHub. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Synchro. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

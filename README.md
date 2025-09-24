@@ -1,10 +1,10 @@
-# 🚀 ProjetoHub - Sistema de Gerenciamento de Projetos
+# 🚀 Synchro - Sistema de Gerenciamento de Projetos
 
 Este é um projeto desenvolvido para a disciplina de **Programação Web** do curso de **Bacharelado em Sistemas de Informação** do IFBA.
 
 ## 📋 Sobre o Projeto
 
-O **ProjetoHub** é uma plataforma completa para gerenciamento de projetos que oferece soluções para empresas de todos os tamanhos. O sistema foi desenvolvido seguindo os requisitos específicos do projeto acadêmico, implementando todas as funcionalidades obrigatórias para frontend.
+O **Synchro** é uma plataforma completa para gerenciamento de projetos que oferece soluções para empresas de todos os tamanhos. O sistema foi desenvolvido seguindo os requisitos específicos do projeto acadêmico, implementando todas as funcionalidades obrigatórias para frontend.
 
 ## 🎯 Tema Escolhido
 
