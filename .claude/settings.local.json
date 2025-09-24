@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/dev/project_manager/project_manager_backend/src/**)",
+      "Read(//c/dev/project_manager/project_manager_backend/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

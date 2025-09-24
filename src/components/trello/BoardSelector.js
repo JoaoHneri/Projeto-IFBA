@@ -1,332 +1,197 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useBoardContext } from '@/contexts/BoardContext';
-import { Plus, X, MoreHorizontal, Users, Lock, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Users, ArrowRight, Star, Clock, Plus, Target, Folder } from 'lucide-react';
+import Link from 'next/link';
 
-const backgroundColors = {
-  emerald: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-  blue: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-  purple: 'bg-gradient-to-br from-purple-500 to-pink-600',
-  orange: 'bg-gradient-to-br from-orange-500 to-red-600',
-  gray: 'bg-gradient-to-br from-gray-500 to-slate-600'
+const statusColors = {
+  ativo: 'bg-green-100 text-green-800',
+  pausado: 'bg-yellow-100 text-yellow-800',
+  concluido: 'bg-blue-100 text-blue-800',
+  cancelado: 'bg-red-100 text-red-800'
 };
 
-export default function BoardSelector() {
-  const { boards, currentBoard, dispatch } = useBoardContext();
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [showBoardOptions, setShowBoardOptions] = useState(null);
-  const [newBoard, setNewBoard] = useState({
-    title: '',
-    description: '',
-    visibility: 'team',
-    background: 'emerald'
+export default function BoardSelector({ projects = [], onProjectSelect }) {
+  const [filter, setFilter] = useState('todos');
+
+  const filteredProjects = projects.filter(project => {
+    if (filter === 'todos') return true;
+    return project.status === filter;
   });
 
-  // Fechar dropdown quando clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.board-options-container')) {
-        setShowBoardOptions(null);
-      }
+  const getProjectStats = (project) => {
+    return {
+      tasksCount: project.total_tarefas || 0,
+      completedTasks: project.tarefas_concluidas || 0,
+      teamMembers: project.membros || 1
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-
-  const handleCreateBoard = (e) => {
-    e.preventDefault();
-    if (newBoard.title.trim()) {
-      dispatch({
-        type: 'CREATE_BOARD',
-        payload: {
-          ...newBoard,
-          createdAt: new Date(),
-          members: ['user1'],
-          lists: [
-            {
-              id: 'default-list-1',
-              title: 'A Fazer',
-              position: 0,
-              cards: []
-            },
-            {
-              id: 'default-list-2',
-              title: 'Em Progresso',
-              position: 1,
-              cards: []
-            },
-            {
-              id: 'default-list-3',
-              title: 'Concluído',
-              position: 2,
-              cards: []
-            }
-          ]
-        }
-      });
-      setNewBoard({ title: '', description: '', visibility: 'team', background: 'emerald' });
-      setShowCreateForm(false);
-    }
   };
 
-  const getVisibilityIcon = (visibility) => {
-    switch (visibility) {
-      case 'private': return <Lock className="w-4 h-4" />;
-      case 'public': return <Globe className="w-4 h-4" />;
-      default: return <Users className="w-4 h-4" />;
-    }
-  };
-
-  const getVisibilityText = (visibility) => {
-    switch (visibility) {
-      case 'private': return 'Privado';
-      case 'public': return 'Público';
-      default: return 'Equipe';
-    }
-  };
-
-  const handleBoardOptionsClick = (e, boardId) => {
-    e.stopPropagation();
-    setShowBoardOptions(showBoardOptions === boardId ? null : boardId);
-  };
-
-  const handleDeleteBoard = (boardId) => {
-    if (window.confirm('Tem certeza que deseja excluir este quadro? Esta ação não pode ser desfeita.')) {
-      dispatch({ type: 'DELETE_BOARD', payload: { boardId } });
-      setShowBoardOptions(null);
-    }
-  };
-
-  const handleDuplicateBoard = (board) => {
-    dispatch({
-      type: 'CREATE_BOARD',
-      payload: {
-        ...board,
-        id: undefined,
-        title: `${board.title} (cópia)`,
-        createdAt: new Date(),
-      }
-    });
-    setShowBoardOptions(null);
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
   return (
     <div className="p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Seus Quadros</h1>
-            <p className="text-gray-600">Gerencie todos os seus projetos em um só lugar</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Seus Projetos</h1>
+            <p className="text-gray-600">Selecione um projeto para gerenciar as tarefas no Kanban</p>
           </div>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Criar Quadro
-          </button>
+          <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
+            <Link href="/projetos/novo">
+              <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Novo Projeto
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {boards.map((board) => (
-            <div
-              key={board.id}
-              className={`${backgroundColors[board.background]} p-6 rounded-lg shadow-md hover:shadow-lg transition-all group relative overflow-hidden`}
+        {/* Filtros */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { key: 'todos', label: 'Todos', count: projects.length },
+            { key: 'ativo', label: 'Ativos', count: projects.filter(p => p.status === 'ativo').length },
+            { key: 'pausado', label: 'Pausados', count: projects.filter(p => p.status === 'pausado').length },
+            { key: 'concluido', label: 'Concluídos', count: projects.filter(p => p.status === 'concluido').length }
+          ].map(filterOption => (
+            <Button
+              key={filterOption.key}
+              variant={filter === filterOption.key ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter(filterOption.key)}
+              className="text-sm"
             >
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 
-                    onClick={() => dispatch({ type: 'SET_CURRENT_BOARD', payload: { boardId: board.id } })}
-                    className="text-white font-semibold text-lg mb-2 line-clamp-2 cursor-pointer flex-1 hover:text-opacity-80 transition-opacity"
-                  >
-                    {board.title}
-                  </h3>
-                  <div className="relative board-options-container">
-                    <button 
-                      onClick={(e) => handleBoardOptionsClick(e, board.id)}
-                      className="text-white hover:bg-white hover:bg-opacity-20 p-1 rounded transition-all opacity-60 hover:opacity-100"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                    
-                    {showBoardOptions === board.id && (
-                      <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[180px] z-50">
-                        <button
-                          onClick={() => {
-                            dispatch({ type: 'SET_CURRENT_BOARD', payload: { boardId: board.id } });
-                            setShowBoardOptions(null);
-                          }}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                        >
-                          Abrir quadro
-                        </button>
-                        <button
-                          onClick={() => handleDuplicateBoard(board)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                        >
-                          Duplicar quadro
-                        </button>
-                        <hr className="my-1" />
-                        <button
-                          onClick={() => handleDeleteBoard(board.id)}
-                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          Excluir quadro
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {board.description && (
-                  <p className="text-white text-opacity-90 text-sm mb-4 line-clamp-2">
-                    {board.description}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-white text-opacity-90">
-                    {getVisibilityIcon(board.visibility)}
-                    <span className="text-sm">{getVisibilityText(board.visibility)}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-xs font-medium">
-                      {board.members.length}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 text-white text-opacity-75 text-xs">
-                  {board.lists.reduce((total, list) => total + list.cards.length, 0)} cartões
-                </div>
-              </div>
-            </div>
+              {filterOption.label}
+              {filterOption.count > 0 && (
+                <Badge variant="secondary" className="ml-2 text-xs">
+                  {filterOption.count}
+                </Badge>
+              )}
+            </Button>
           ))}
-
-          {/* Card para criar novo quadro */}
-          <div
-            onClick={() => setShowCreateForm(true)}
-            className="bg-gray-100 hover:bg-gray-200 p-6 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[200px] group"
-          >
-            <Plus className="w-8 h-8 text-gray-400 group-hover:text-gray-600 mb-2" />
-            <span className="text-gray-600 group-hover:text-gray-800 font-medium">
-              Criar Novo Quadro
-            </span>
-          </div>
         </div>
 
-        {/* Modal de Criação de Quadro */}
-        {showCreateForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Criar Novo Quadro</h2>
-                  <button
-                    onClick={() => setShowCreateForm(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+        {/* Lista de Projetos */}
+        {filteredProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <Folder className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {filter === 'todos' ? 'Nenhum projeto encontrado' : `Nenhum projeto ${filter}`}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {filter === 'todos'
+                ? 'Comece criando seu primeiro projeto.'
+                : `Você não tem projetos com status "${filter}".`
+              }
+            </p>
+            <Link href="/projetos/novo">
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Criar Primeiro Projeto
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project) => {
+              const stats = getProjectStats(project);
+              const completionPercentage = stats.tasksCount > 0
+                ? Math.round((stats.completedTasks / stats.tasksCount) * 100)
+                : 0;
 
-                <form onSubmit={handleCreateBoard} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome do Quadro *
-                    </label>
-                    <input
-                      type="text"
-                      value={newBoard.title}
-                      onChange={(e) => setNewBoard(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                      placeholder="Ex: Sistema E-commerce"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Descrição
-                    </label>
-                    <textarea
-                      value={newBoard.description}
-                      onChange={(e) => setNewBoard(prev => ({ ...prev, description: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
-                      rows="3"
-                      placeholder="Descreva o objetivo deste quadro..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cor de Fundo
-                    </label>
-                    <div className="flex gap-2">
-                      {Object.entries(backgroundColors).map(([key, className]) => (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => setNewBoard(prev => ({ ...prev, background: key }))}
-                          className={`w-10 h-10 rounded-lg ${className} ${
-                            newBoard.background === key ? 'ring-2 ring-gray-900 ring-offset-2' : ''
-                          }`}
-                        />
-                      ))}
+              return (
+                <Card key={project.id} className="hover:shadow-lg transition-all cursor-pointer group">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                          {project.nome}
+                        </CardTitle>
+                        <CardDescription className="mt-2 line-clamp-3">
+                          {project.descricao || 'Sem descrição'}
+                        </CardDescription>
+                      </div>
+                      <Badge
+                        className={`ml-2 ${statusColors[project.status] || 'bg-gray-100 text-gray-800'}`}
+                      >
+                        {project.status || 'ativo'}
+                      </Badge>
                     </div>
-                  </div>
+                  </CardHeader>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visibilidade
-                    </label>
-                    <div className="space-y-2">
-                      {[
-                        { value: 'private', label: 'Privado', icon: Lock, desc: 'Apenas você pode ver' },
-                        { value: 'team', label: 'Equipe', icon: Users, desc: 'Membros da equipe podem ver' },
-                        { value: 'public', label: 'Público', icon: Globe, desc: 'Qualquer pessoa pode ver' }
-                      ].map((option) => (
-                        <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                          <input
-                            type="radio"
-                            name="visibility"
-                            value={option.value}
-                            checked={newBoard.visibility === option.value}
-                            onChange={(e) => setNewBoard(prev => ({ ...prev, visibility: e.target.value }))}
-                            className="text-emerald-600 focus:ring-emerald-500"
-                          />
-                          <option.icon className="w-4 h-4 text-gray-600" />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{option.label}</div>
-                            <div className="text-xs text-gray-500">{option.desc}</div>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Progresso */}
+                      {stats.tasksCount > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                            <span>Progresso</span>
+                            <span>{completionPercentage}%</span>
                           </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-emerald-600 h-2 rounded-full transition-all"
+                              style={{ width: `${completionPercentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
 
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      Criar Quadro
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowCreateForm(false)}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
+                      {/* Estatísticas */}
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="flex items-center justify-center mb-1">
+                            <Target className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <p className="text-lg font-semibold text-gray-900">{stats.tasksCount}</p>
+                          <p className="text-xs text-gray-600">Tarefas</p>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-center mb-1">
+                            <Users className="w-4 h-4 text-green-600" />
+                          </div>
+                          <p className="text-lg font-semibold text-gray-900">{stats.teamMembers}</p>
+                          <p className="text-xs text-gray-600">Membros</p>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-center mb-1">
+                            <Calendar className="w-4 h-4 text-purple-600" />
+                          </div>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {project.data_fim ? formatDate(project.data_fim) : 'N/A'}
+                          </p>
+                          <p className="text-xs text-gray-600">Prazo</p>
+                        </div>
+                      </div>
+
+                      {/* Ações */}
+                      <div className="flex gap-2 pt-4">
+                        <Button
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                          onClick={() => onProjectSelect(project)}
+                        >
+                          Abrir Kanban
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                        <Button variant="outline" size="icon" asChild>
+                          <Link href={`/projetos/${project.id}`}>
+                            <Star className="w-4 h-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

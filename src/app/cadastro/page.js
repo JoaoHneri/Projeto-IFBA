@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, UserPlus, ArrowLeft, AlertCircle, CheckCircle, Check } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CadastroPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,12 +18,19 @@ export default function CadastroPage() {
     nome: '',
     email: '',
     telefone: '',
-    password: '',
-    confirmPassword: '',
+    senha: '',
+    confirmSenha: '',
     acceptTerms: false
   });
   const [errors, setErrors] = useState({});
-  const [registerStatus, setRegisterStatus] = useState(null);
+  const { register, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -44,18 +53,18 @@ export default function CadastroPage() {
       newErrors.telefone = 'Formato inválido. Use (xx) xxxxx-xxxx';
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Senha deve ter pelo menos 8 caracteres';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Senha deve conter pelo menos: 1 letra minúscula, 1 maiúscula e 1 número';
+    if (!formData.senha) {
+      newErrors.senha = 'Senha é obrigatória';
+    } else if (formData.senha.length < 8) {
+      newErrors.senha = 'Senha deve ter pelo menos 8 caracteres';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.senha)) {
+      newErrors.senha = 'Senha deve conter pelo menos: 1 letra minúscula, 1 maiúscula e 1 número';
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'As senhas não coincidem';
+    if (!formData.confirmSenha) {
+      newErrors.confirmSenha = 'Confirmação de senha é obrigatória';
+    } else if (formData.senha !== formData.confirmSenha) {
+      newErrors.confirmSenha = 'As senhas não coincidem';
     }
 
     if (!formData.acceptTerms) {
@@ -82,30 +91,25 @@ export default function CadastroPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setRegisterStatus(null);
 
-    // Simular processo de cadastro
-    try {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Simular cadastro bem-sucedido
-      setRegisterStatus('success');
-      
-      // Redirecionar após sucesso
-      setTimeout(() => {
-        // window.location.href = '/login';
-        console.log('Cadastro realizado com sucesso!');
-      }, 2000);
-      
-    } catch (error) {
-      setRegisterStatus('error');
-    } finally {
-      setIsLoading(false);
+    const result = await register({
+      nome: formData.nome,
+      email: formData.email,
+      telefone: formData.telefone,
+      senha: formData.senha
+    });
+
+    if (result.success) {
+      router.push('/login');
+    } else {
+      setErrors({ submit: result.error || 'Erro ao criar conta' });
     }
+
+    setIsLoading(false);
   };
 
   const handleInputChange = (e) => {
@@ -133,7 +137,7 @@ export default function CadastroPage() {
   };
 
   const getPasswordStrength = () => {
-    const password = formData.password;
+    const password = formData.senha;
     if (!password) return { strength: 0, text: '' };
     
     let strength = 0;
@@ -181,20 +185,6 @@ export default function CadastroPage() {
           <p className="text-gray-600">Preencha os dados para começar</p>
         </div>
 
-        {/* Status Messages */}
-        {registerStatus === 'success' && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center text-green-700">
-            <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />
-            <span className="text-sm">Conta criada com sucesso! Redirecionando para login...</span>
-          </div>
-        )}
-
-        {registerStatus === 'error' && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center text-red-700">
-            <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
-            <span className="text-sm">Erro ao criar conta. Tente novamente.</span>
-          </div>
-        )}
 
         {/* Register Form */}
         <Card className="shadow-clean-lg border-gray-200">
@@ -279,18 +269,18 @@ export default function CadastroPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="senha" className="text-sm font-medium text-gray-700">
                   Senha
                 </Label>
                 <div className="relative">
                   <Input
-                    id="password"
-                    name="password"
+                    id="senha"
+                    name="senha"
                     type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
+                    value={formData.senha}
                     onChange={handleInputChange}
                     placeholder="Digite uma senha forte"
-                    className={`h-11 pr-12 ${errors.password ? 'border-red-300 focus:border-red-500' : ''}`}
+                    className={`h-11 pr-12 ${errors.senha ? 'border-red-300 focus:border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   <button
@@ -304,7 +294,7 @@ export default function CadastroPage() {
                 </div>
                 
                 {/* Password Strength */}
-                {formData.password && (
+                {formData.senha && (
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -341,28 +331,28 @@ export default function CadastroPage() {
                   </div>
                 )}
                 
-                {errors.password && (
+                {errors.senha && (
                   <p className="text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.password}
+                    {errors.senha}
                   </p>
                 )}
               </div>
 
               {/* Confirm Password */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="confirmSenha" className="text-sm font-medium text-gray-700">
                   Confirmar senha
                 </Label>
                 <div className="relative">
                   <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
+                    id="confirmSenha"
+                    name="confirmSenha"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.confirmPassword}
+                    value={formData.confirmSenha}
                     onChange={handleInputChange}
                     placeholder="Digite a senha novamente"
-                    className={`h-11 pr-12 ${errors.confirmPassword ? 'border-red-300 focus:border-red-500' : ''}`}
+                    className={`h-11 pr-12 ${errors.confirmSenha ? 'border-red-300 focus:border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   <button
@@ -374,10 +364,10 @@ export default function CadastroPage() {
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-                {errors.confirmPassword && (
+                {errors.confirmSenha && (
                   <p className="text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.confirmPassword}
+                    {errors.confirmSenha}
                   </p>
                 )}
               </div>
@@ -412,6 +402,16 @@ export default function CadastroPage() {
                   </p>
                 )}
               </div>
+
+              {/* Error Message */}
+              {errors.submit && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {errors.submit}
+                  </p>
+                </div>
+              )}
 
               {/* Submit Button */}
               <Button

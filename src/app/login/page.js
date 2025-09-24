@@ -1,23 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, LogIn, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/toaster';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
+    senha: '',
     rememberMe: false
   });
   const [errors, setErrors] = useState({});
-  const [loginStatus, setLoginStatus] = useState(null);
+  const { login, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -28,10 +38,10 @@ export default function LoginPage() {
       newErrors.email = 'Email inválido';
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+    if (!formData.senha) {
+      newErrors.senha = 'Senha é obrigatória';
+    } else if (formData.senha.length < 6) {
+      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
     }
 
     setErrors(newErrors);
@@ -40,30 +50,24 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setLoginStatus(null);
 
-    // Simular processo de login
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simular login bem-sucedido
-      setLoginStatus('success');
-      
-      // Redirecionar após sucesso (em uma aplicação real)
-      setTimeout(() => {
-        // window.location.href = '/dashboard';
-        console.log('Login realizado com sucesso!');
-      }, 1500);
-      
-    } catch (error) {
-      setLoginStatus('error');
-    } finally {
-      setIsLoading(false);
+    const result = await login({
+      email: formData.email,
+      senha: formData.senha
+    });
+
+    if (result.success) {
+      toast.success('Login realizado com sucesso!');
+      router.push('/dashboard');
+    } else {
+      toast.error(result.error || 'Erro ao fazer login');
     }
+
+    setIsLoading(false);
   };
 
   const handleInputChange = (e) => {
@@ -102,20 +106,6 @@ export default function LoginPage() {
           <p className="text-gray-600">Entre na sua conta para continuar</p>
         </div>
 
-        {/* Status Messages */}
-        {loginStatus === 'success' && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center text-green-700">
-            <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />
-            <span className="text-sm">Login realizado com sucesso! Redirecionando...</span>
-          </div>
-        )}
-
-        {loginStatus === 'error' && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center text-red-700">
-            <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
-            <span className="text-sm">Credenciais inválidas. Tente novamente.</span>
-          </div>
-        )}
 
         {/* Login Form */}
         <Card className="shadow-clean-lg border-gray-200">
@@ -153,18 +143,18 @@ export default function LoginPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="senha" className="text-sm font-medium text-gray-700">
                   Senha
                 </Label>
                 <div className="relative">
                   <Input
-                    id="password"
-                    name="password"
+                    id="senha"
+                    name="senha"
                     type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
+                    value={formData.senha}
                     onChange={handleInputChange}
                     placeholder="Digite sua senha"
-                    className={`h-11 pr-12 ${errors.password ? 'border-red-300 focus:border-red-500' : ''}`}
+                    className={`h-11 pr-12 ${errors.senha ? 'border-red-300 focus:border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   <button
@@ -176,10 +166,10 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-                {errors.password && (
+                {errors.senha && (
                   <p className="text-sm text-red-600 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.password}
+                    {errors.senha}
                   </p>
                 )}
               </div>

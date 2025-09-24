@@ -1,26 +1,102 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useBoardContext } from '@/contexts/BoardContext';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import { arrayMove } from '@dnd-kit/sortable';
-import TrelloList from './TrelloList';
+import KanbanList from './KanbanList';
 import TrelloCard from './TrelloCard';
+import { taskService } from '@/services';
+import { useAsyncAction } from '@/hooks/useApi';
 import { Plus, ArrowLeft, Users, Settings, Filter, Search } from 'lucide-react';
 
-export default function TrelloBoard({ board }) {
-  const { dispatch } = useBoardContext();
+export default function TrelloBoard({ project, tasks, loading, onBackToProjects, onTaskUpdate }) {
   const [activeCard, setActiveCard] = useState(null);
-  const [showCreateList, setShowCreateList] = useState(false);
-  const [newListTitle, setNewListTitle] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLabel, setFilterLabel] = useState('');
   const [isClient, setIsClient] = useState(false);
 
+  const { loading: creatingTask, execute: createTask } = useAsyncAction();
+  const { loading: updatingTask, execute: updateTask } = useAsyncAction();
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'alta': return 'red';
+      case 'media': return 'yellow';
+      case 'baixa': return 'green';
+      default: return 'gray';
+    }
+  };
+
+  // Criar um board baseado no projeto e tarefas
+  const board = useMemo(() => {
+    if (!project) return null;
+
+    // Organizar tarefas por status
+    const tasksByStatus = {
+      pendente: [],
+      andamento: [],
+      concluida: []
+    };
+
+    tasks.forEach(task => {
+      const status = task.status || 'pendente';
+      if (tasksByStatus[status]) {
+        tasksByStatus[status].push({
+          id: task.id,
+          title: task.titulo,
+          description: task.descricao,
+          position: 0,
+          labels: [
+            { id: `priority-${task.id}`, name: task.prioridade || 'media', color: getPriorityColor(task.prioridade) }
+          ],
+          dueDate: task.data_vencimento ? new Date(task.data_vencimento) : null,
+          priority: task.prioridade || 'media',
+          cover: null,
+          archived: false,
+          checklist: [],
+          attachments: [],
+          comments: [],
+          members: [],
+          activity: []
+        });
+      }
+    });
+
+    return {
+      id: project.id,
+      title: project.nome,
+      description: project.descricao,
+      visibility: 'team',
+      background: 'emerald',
+      createdAt: new Date(project.data_inicio),
+      members: [],
+      lists: [
+        {
+          id: 'pendente',
+          title: 'A Fazer',
+          position: 0,
+          cards: tasksByStatus.pendente
+        },
+        {
+          id: 'andamento',
+          title: 'Em Progresso',
+          position: 1,
+          cards: tasksByStatus.andamento
+        },
+        {
+          id: 'concluida',
+          title: 'Concluído',
+          position: 2,
+          cards: tasksByStatus.concluida
+        }
+      ]
+    };
+  }, [project, tasks]);
 
   // Memoizar as funções de busca para melhor performance
   const findCardLocation = useCallback((cardId) => {
@@ -49,9 +125,9 @@ export default function TrelloBoard({ board }) {
     return null;
   }, [board?.lists]);
 
-  const handleDragEnd = useCallback((event) => {
+  const handleDragEnd = useCallback(async (event) => {
     if (!board) return;
-    
+
     const { active, over } = event;
     setActiveCard(null);
 
@@ -67,54 +143,36 @@ export default function TrelloBoard({ board }) {
     if (!sourceData || !destData) return;
 
     if (sourceData.listId !== destData.listId) {
-      // Moving between lists
-      const sourceList = board.lists.find(list => list.id === sourceData.listId);
-      const destList = board.lists.find(list => list.id === destData.listId);
-      
-      dispatch({
-        type: 'MOVE_CARD',
-        payload: {
-          boardId: board.id,
-          sourceListId: sourceData.listId,
-          destinationListId: destData.listId,
-          sourceIndex: sourceData.index,
-          destinationIndex: destData.index || destList.cards.length
-        }
-      });
-    } else {
-      // Reordering within same list
-      const list = board.lists.find(list => list.id === sourceData.listId);
-      const oldIndex = sourceData.index;
-      const newIndex = destData.index;
+      // Moving between lists - update task status
+      const newStatus = destData.listId;
 
-      if (oldIndex !== newIndex) {
-        const newCards = arrayMove(list.cards, oldIndex, newIndex);
-        dispatch({
-          type: 'UPDATE_LIST',
-          payload: {
-            boardId: board.id,
-            listId: sourceData.listId,
-            updates: { cards: newCards }
-          }
-        });
+      const result = await updateTask(taskService.updateTask, activeId, {
+        status: newStatus
+      });
+
+      if (result.success) {
+        onTaskUpdate(); // Refresh tasks
       }
     }
-  }, [board, findCardLocation, findListLocation, dispatch]);
+    // Reordering within same list is not needed for status-based kanban
+  }, [board, findCardLocation, findListLocation, updateTask, onTaskUpdate]);
 
-  const handleCreateList = useCallback((e) => {
-    e.preventDefault();
-    if (newListTitle.trim()) {
-      dispatch({
-        type: 'CREATE_LIST',
-        payload: {
-          boardId: board?.id,
-          list: { title: newListTitle.trim() }
-        }
-      });
-      setNewListTitle('');
-      setShowCreateList(false);
+  const handleCreateTask = useCallback(async (status, title) => {
+    if (!title.trim() || !project?.id) return false;
+
+    const result = await createTask(taskService.createTaskInProject, project.id, {
+      titulo: title.trim(),
+      descricao: '',
+      status: status,
+      prioridade: 'media'
+    });
+
+    if (result.success) {
+      onTaskUpdate(); // Refresh tasks
+      return true;
     }
-  }, [newListTitle, board?.id, dispatch]);
+    return false;
+  }, [project?.id, createTask, onTaskUpdate]);
 
   const filteredLists = useMemo(() => {
     if (!board?.lists) return [];
@@ -144,12 +202,23 @@ export default function TrelloBoard({ board }) {
     )];
   }, [board?.lists]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">Carregando tarefas...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!board) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Nenhum quadro selecionado</h2>
-          <p className="text-gray-600">Selecione um quadro para começar</p>
+          <h2 className="text-2xl font-semibold text-white mb-2">Nenhum projeto selecionado</h2>
+          <p className="text-white text-opacity-80">Selecione um projeto para começar</p>
         </div>
       </div>
     );
@@ -179,7 +248,7 @@ export default function TrelloBoard({ board }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => dispatch({ type: 'CLEAR_CURRENT_BOARD' })}
+                  onClick={onBackToProjects}
                   className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5" />
@@ -234,7 +303,7 @@ export default function TrelloBoard({ board }) {
           <div className="hidden lg:flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => dispatch({ type: 'CLEAR_CURRENT_BOARD' })}
+                onClick={onBackToProjects}
                 className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -296,57 +365,14 @@ export default function TrelloBoard({ board }) {
             <div className="flex gap-4 sm:gap-6 min-h-[calc(100vh-200px)] pb-4 min-w-max">
               <SortableContext items={filteredLists.map(list => list.id)} strategy={horizontalListSortingStrategy}>
                 {filteredLists.map((list) => (
-                  <TrelloList
+                  <KanbanList
                     key={list.id}
                     list={list}
-                    boardId={board.id}
+                    onCreateTask={handleCreateTask}
+                    creatingTask={creatingTask}
                   />
                 ))}
               </SortableContext>
-
-              {/* Add List */}
-              <div className="min-w-[280px] sm:min-w-[300px]">
-                {showCreateList ? (
-                  <div className="bg-white rounded-lg p-3 shadow-md">
-                    <form onSubmit={handleCreateList}>
-                      <input
-                        type="text"
-                        value={newListTitle}
-                        onChange={(e) => setNewListTitle(e.target.value)}
-                        placeholder="Insira o título da lista..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                        autoFocus
-                      />
-                      <div className="flex flex-col sm:flex-row gap-2 mt-2">
-                        <button
-                          type="submit"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded text-sm transition-colors flex-1"
-                        >
-                          Adicionar lista
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowCreateList(false);
-                            setNewListTitle('');
-                          }}
-                          className="text-gray-600 hover:text-gray-800 px-3 py-2 text-sm transition-colors border border-gray-300 rounded hover:bg-gray-50"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowCreateList(true)}
-                    className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 min-h-[120px] border-2 border-dashed border-white border-opacity-30 hover:border-opacity-50"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span className="text-sm sm:text-base">Adicionar uma lista</span>
-                  </button>
-                )}
-              </div>
             </div>
 
             <DragOverlay>

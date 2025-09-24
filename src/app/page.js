@@ -1,10 +1,44 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { reportService } from "@/services";
 import { ArrowRight, CheckCircle, Users, Target, TrendingUp, Star } from "lucide-react";
 
 export default function HomePage() {
+  const [stats, setStats] = useState({
+    projectsCompleted: '10k+',
+    satisfactionRate: '98%',
+    companiesTrust: '500+',
+    supportAvailable: '24/7'
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await reportService.getPublicStats();
+        setStats({
+          projectsCompleted: `${Math.floor(data.projectsCompleted / 1000)}k+`,
+          satisfactionRate: data.satisfactionRate,
+          companiesTrust: `${data.companiesTrust}+`,
+          supportAvailable: data.supportAvailable
+        });
+      } catch (error) {
+        console.error('Erro ao carregar estatísticas:', error);
+        // Manter dados padrão em caso de erro
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <Navigation />
@@ -25,17 +59,21 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button size="lg" className="text-lg px-8 py-4 bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-              Começar agora
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="text-lg px-8 py-4 border-2 border-slate-300 hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200"
-            >
-              Ver demonstração
-            </Button>
+            <Link href="/cadastro">
+              <Button size="lg" className="text-lg px-8 py-4 bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+                Começar agora
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/projetos">
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 py-4 border-2 border-slate-300 hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200"
+              >
+                Ver exemplos
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -101,19 +139,27 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">10k+</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {loading ? '...' : stats.projectsCompleted}
+              </div>
               <div className="text-slate-600">Projetos concluídos</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-green-600 mb-2">98%</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                {loading ? '...' : stats.satisfactionRate}
+              </div>
               <div className="text-slate-600">Taxa de satisfação</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-purple-600 mb-2">500+</div>
+              <div className="text-4xl font-bold text-purple-600 mb-2">
+                {loading ? '...' : stats.companiesTrust}
+              </div>
               <div className="text-slate-600">Empresas confiam</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
+              <div className="text-4xl font-bold text-orange-600 mb-2">
+                {loading ? '...' : stats.supportAvailable}
+              </div>
               <div className="text-slate-600">Suporte dedicado</div>
             </div>
           </div>
@@ -130,13 +176,15 @@ export default function HomePage() {
             Junte-se a milhares de equipes que já descobriram uma forma mais 
             inteligente de gerenciar projetos.
           </p>
-          <Button 
-            size="lg" 
-            className="text-lg px-8 py-4 bg-white text-emerald-600 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            Comece seu teste gratuito
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/cadastro">
+            <Button
+              size="lg"
+              className="text-lg px-8 py-4 bg-white text-emerald-600 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Comece seu teste gratuito
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
