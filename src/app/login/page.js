@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, LogIn, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/components/ui/toaster';
+// import { toast } from '@/components/ui/toaster';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);

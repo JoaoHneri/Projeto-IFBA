@@ -5,7 +5,7 @@ import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import { arrayMove } from '@dnd-kit/sortable';
 import KanbanList from './KanbanList';
-import TrelloCard from './TrelloCard';
+import TaskCard from './TaskCard';
 import { taskService } from '@/services';
 import { useAsyncAction } from '@/hooks/useApi';
 import { Plus, ArrowLeft, Users, Settings, Filter, Search } from 'lucide-react';
@@ -18,6 +18,7 @@ export default function TrelloBoard({ project, tasks, loading, onBackToProjects,
 
   const { loading: creatingTask, execute: createTask } = useAsyncAction();
   const { loading: updatingTask, execute: updateTask } = useAsyncAction();
+  const { loading: deletingTask, execute: deleteTask } = useAsyncAction();
 
   useEffect(() => {
     setIsClient(true);
@@ -173,6 +174,20 @@ export default function TrelloBoard({ project, tasks, loading, onBackToProjects,
     }
     return false;
   }, [project?.id, createTask, onTaskUpdate]);
+
+  const handleEditTask = useCallback((task) => {
+    // For now, just log - could open a modal for editing
+    console.log('Edit task:', task);
+  }, []);
+
+  const handleDeleteTask = useCallback(async (task) => {
+    if (window.confirm(`Tem certeza que deseja excluir a tarefa "${task.title}"?`)) {
+      const result = await deleteTask(taskService.deleteTask, task.id);
+      if (result.success) {
+        onTaskUpdate(); // Refresh tasks
+      }
+    }
+  }, [deleteTask, onTaskUpdate]);
 
   const filteredLists = useMemo(() => {
     if (!board?.lists) return [];
@@ -370,6 +385,8 @@ export default function TrelloBoard({ project, tasks, loading, onBackToProjects,
                     list={list}
                     onCreateTask={handleCreateTask}
                     creatingTask={creatingTask}
+                    onEditTask={handleEditTask}
+                    onDeleteTask={handleDeleteTask}
                   />
                 ))}
               </SortableContext>
@@ -378,7 +395,7 @@ export default function TrelloBoard({ project, tasks, loading, onBackToProjects,
             <DragOverlay>
               {activeCard ? (
                 <div className="transform rotate-3">
-                  <TrelloCard card={activeCard} isDragOverlay />
+                  <TaskCard card={activeCard} isDragOverlay />
                 </div>
               ) : null}
             </DragOverlay>

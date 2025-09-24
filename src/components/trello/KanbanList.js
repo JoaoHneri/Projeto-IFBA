@@ -3,13 +3,15 @@
 import React, { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import TrelloCard from './TrelloCard';
+import TaskCard from './TaskCard';
 import { Plus, X } from 'lucide-react';
 
 export default function KanbanList({
   list,
   onCreateTask,
-  creatingTask = false
+  creatingTask = false,
+  onEditTask,
+  onDeleteTask
 }) {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState('');
@@ -69,10 +71,11 @@ export default function KanbanList({
             strategy={verticalListSortingStrategy}
           >
             {list.cards.map((card) => (
-              <TrelloCard
+              <TaskCard
                 key={card.id}
                 card={card}
-                listId={list.id}
+                onEdit={onEditTask}
+                onDelete={onDeleteTask}
               />
             ))}
           </SortableContext>

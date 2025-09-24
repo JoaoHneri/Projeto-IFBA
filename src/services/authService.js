@@ -29,6 +29,14 @@ class AuthService {
   async changePassword(passwordData) {
     return apiClient.put('/auth/change-password', passwordData);
   }
+
+  async forgotPassword(data) {
+    return apiClient.post('/auth/forgot-password', data);
+  }
+
+  async resetPassword(data) {
+    return apiClient.post('/auth/reset-password', data);
+  }
 }
 
 export const authService = new AuthService();

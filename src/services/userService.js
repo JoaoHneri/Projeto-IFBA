@@ -23,6 +23,27 @@ class UserService {
   async deleteUser(userId) {
     return apiClient.delete(`/users/${userId}`);
   }
+
+  // Profile management
+  async updateProfile(profileData) {
+    return apiClient.put('/profile', profileData);
+  }
+
+  async updatePassword(passwordData) {
+    return apiClient.put('/profile/password', passwordData);
+  }
+
+  async updateNotificationSettings(settings) {
+    return apiClient.put('/profile/notifications', settings);
+  }
+
+  async updatePrivacySettings(settings) {
+    return apiClient.put('/profile/privacy', settings);
+  }
+
+  async deleteAccount() {
+    return apiClient.delete('/profile');
+  }
 }
 
 export const userService = new UserService();
