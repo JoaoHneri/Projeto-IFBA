@@ -1,7 +1,7 @@
 import { classifyError, isExpectedError, getFriendlyErrorMessage } from '../utils/errorTypes.js';
 
 // Configuração base da API
-const API_BASE_URL = "https://project-manager-backend-5wv2.onrender.com/" || 'http://localhost:3333/api';
+const API_BASE_URL = "https://project-manager-backend-5wv2.onrender.com" || 'http://localhost:3333/api';
 
 // Log para debug
 if (typeof window !== 'undefined') {
